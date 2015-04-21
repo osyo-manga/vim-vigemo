@@ -23,7 +23,7 @@ git clone https://github.com/osyo-manga/vim-vigemo ~/.vim/bundle/vim-vigemo
 ##Requirement
 
 * command
- * __[cmigemo](http://www.kaoriya.net/software/cmigemo/)
+ * __[cmigemo](http://www.kaoriya.net/software/cmigemo/)__
 * vim plugin
  * __[vimproc.vim](https://github.com/Shougo/vimproc.vim)__
 
