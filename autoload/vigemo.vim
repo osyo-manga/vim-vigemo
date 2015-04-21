@@ -22,6 +22,7 @@ function! vigemo#load()
 	let s:Commandline  = s:V.import("Over.Commandline")
 	let s:Migemo = s:V.import("Migemo.Interactive")
 	let s:Highlight  = s:V.import("Coaster.Highlight")
+	let s:Modules = s:V.import("Over.Commandline.Modules")
 
 	if exists("s:cmigemo")
 		call s:cmigemo.kill(1)
@@ -53,6 +54,7 @@ endfunction
 let s:cmdline = s:Commandline.make_standard("/")
 
 call s:cmdline.connect("AsyncUpdate")
+call s:cmdline.connect(s:Modules.make("HistAdd", "/"))
 
 
 function! s:cmdline.on_update(cmdline)
@@ -65,14 +67,17 @@ function! s:cmdline.on_char(cmdline)
 		return
 	endif
 
-	let pat = a:cmdline.getline()
+" 	let pat = a:cmdline.getline()
+	let pat = s:Migemo.generate_regexp(a:cmdline.getline())
 	let @/ = pat
 	if pat == ""
 		call s:Highlight.clear_all()
 		return
 	endif
-
-	call s:cmigemo.input(pat)
+	
+	call search(pat, 'c')
+	call s:Highlight.highlight("search", "Search", pat)
+" 	call s:cmigemo.input(pat)
 endfunction
 
 
