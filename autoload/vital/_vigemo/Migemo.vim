@@ -46,8 +46,8 @@ endfunction
 
 function! s:search_dict(...)
   for path in [
-        \ 'migemo/'.&encoding.'/migemo-dict',
-        \ &encoding.'/migemo-dict',
+        \ 'migemo/'.&encoding.'.d/migemo-dict',
+        \ &encoding.'.d/migemo-dict',
         \ 'migemo-dict',
         \ ]
     let dict = s:_search_dict(path)
