@@ -50,6 +50,7 @@ function! s:search_dict(...)
         \ &encoding.'.d/migemo-dict',
         \ 'migemo/'.&encoding.'/migemo-dict',
         \ &encoding.'/migemo-dict',
+        \ 'cmigemo/'.&encoding.'/migemo-dict',
         \ 'migemo-dict',
         \ ]
     let dict = s:_search_dict(path)

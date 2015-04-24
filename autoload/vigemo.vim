@@ -13,52 +13,60 @@ function! vigemo#vital()
 	else
 		let s:V = vital#of("vigemo")
 	endif
+	call s:V.unload()
 	return s:V
 endfunction
 
 
 function! vigemo#load()
 	call vigemo#vital()
-	let s:Commandline  = s:V.import("Over.Commandline")
-	let s:Migemo = s:V.import("Migemo.Interactive")
-	let s:Highlight  = s:V.import("Coaster.Highlight")
-	let s:Modules = s:V.import("Over.Commandline.Modules")
-
-	if exists("s:cmigemo")
-		call s:cmigemo.kill(1)
-	endif
-
-	let s:cmigemo = s:Migemo.make_process()
-	call s:cmigemo.wait()
-
-	function! s:cmigemo.then(output, ...)
-		let pat = matchstr(a:output, 'PATTERN: \zs.*\ze[\r\n]$')
-		if pat == ""
-			return
-		endif
-		let @/ = pat
-		call search(@/, "c")
-		call s:Highlight.highlight("search", "Search", pat)
-		redraw
-	endfunction
+	let s:Commandline = s:V.import("Over.Commandline")
+	let s:Migemo      = s:V.import("Migemo.Interactive")
+	let s:Highlight   = s:V.import("Coaster.Highlight")
+	let s:Position    = s:V.import("Coaster.Position")
+	let s:Modules     = s:V.import("Over.Commandline.Modules")
+	let s:Rocker      = s:V.import("Unlocker.Rocker")
+	let s:Holder      = s:V.import("Unlocker.Holder")
 endfunction
 call vigemo#load()
 
 
 function! vigemo#reload()
-	call vital#of("vital").unload()
+	unlet! s:V
 	call vigemo#load()
+endfunction
+
+
+function! vigemo#get_migemo()
+	return s:Migemo
 endfunction
 
 
 let s:cmdline = s:Commandline.make_standard("/")
 
-call s:cmdline.connect("AsyncUpdate")
 call s:cmdline.connect(s:Modules.make("HistAdd", "/"))
 
 
-function! s:cmdline.on_update(cmdline)
-	call s:cmigemo.update()
+function! s:cmdline._update(pat)
+	call s:Highlight.clear_all()
+	let pat = a:pat
+	let @/ = pat
+
+	let pat = s:Migemo.generate_regexp(pat)
+	if pat == ""
+		call self._view.relock()
+		call s:Highlight.highlight("cursor", "Cursor", s:Position.as_pattern(getpos(".")))
+		return
+	endif
+
+	if &ignorecase
+		let pat = '\c' . pat
+	endif
+	let @/ = pat
+	set hlsearch
+	
+	call search(pat, 'c')
+	call s:Highlight.highlight("cursor", "Cursor", s:Position.as_pattern(getpos(".")))
 endfunction
 
 
@@ -66,29 +74,33 @@ function! s:cmdline.on_char(cmdline)
 	if a:cmdline.__is_exit()
 		return
 	endif
-
-" 	let pat = a:cmdline.getline()
-	let pat = s:Migemo.generate_regexp(a:cmdline.getline())
-	let @/ = pat
-	if pat == ""
-		call s:Highlight.clear_all()
-		return
-	endif
-	
-	call search(pat, 'c')
-	call s:Highlight.highlight("search", "Search", pat)
-" 	call s:cmigemo.input(pat)
+	call self._update(a:cmdline.getline())
 endfunction
 
 
 function! s:cmdline.__execute__(cmd)
-" 	let pat = s:Migemo.generate_regexp(a:cmd)
-" 	silent! execute "normal! /" . pat . "\<CR>"
 	let @/ = s:Migemo.generate_regexp(a:cmd)
+	if &hlsearch
+		call feedkeys(":set hlsearch\<CR>")
+	endif
+endfunction
+
+
+function! s:cmdline.on_enter(...)
+	call s:Highlight.clear_all()
+
+	let self._view = s:Rocker.lock(s:Holder.make("Winview"))
+	let self._locker = s:Rocker.lock(
+\		"&hlsearch"
+\	)
+	let &hlsearch = 0
 endfunction
 
 
 function! s:cmdline.on_leave(...)
+	if self.exit_code() != 0
+		call self._view.unlock()
+	endif
 	call s:Highlight.clear_all()
 endfunction
 
@@ -110,4 +122,3 @@ endfunction
 
 
 let &cpo = s:save_cpo
-unlet s:save_cpo
