@@ -29,6 +29,8 @@ git clone https://github.com/osyo-manga/vim-vigemo ~/.vim/bundle/vim-vigemo
 
 ## Screencapture
 
+![vigemo](https://cloud.githubusercontent.com/assets/214488/7343716/b0ab1caa-ecff-11e4-9840-52f9ea3c2536.gif)
+
 ## Usage
 
 ```vim
