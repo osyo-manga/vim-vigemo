@@ -52,6 +52,9 @@ function! s:generate_regexp(word)
 	if a:word ==# ""
 		return ""
 	endif
+	if has("migemo")
+		return s:Migemo.generate_regexp(a:word)
+	endif
 	call s:cmigemo.input(a:word)
 	return matchstr(s:cmigemo.get(), 'PATTERN: \zs.*\ze[\r\n]$')
 endfunction
