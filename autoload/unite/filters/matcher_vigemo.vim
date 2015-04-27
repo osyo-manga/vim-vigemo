@@ -5,6 +5,8 @@ set cpo&vim
 " Base code
 " https://github.com/Shougo/unite.vim/blob/ff2afcbfce1b121251a62258402abe6437e8adb0/autoload/unite/filters/matcher_migemo.vim
 
+let g:unite#filters#matcher_vigemo#filtering_input_length = get(g:, "unite#filters#matcher_vigemo#filtering_input_length", 2)
+
 let s:Migemo = vigemo#get_migemo()
 
 let s:matcher = {
@@ -15,9 +17,9 @@ function! s:matcher.filter(candidates, context)
 "   let self.migemo_regexp = ""
   let candidates = a:candidates
   for input in a:context.input_list
-"     if strlen(input) < 2
-"       continue
-"     endif
+    if strlen(input) < g:unite#filters#matcher_vigemo#filtering_input_length
+      continue
+    endif
     if input =~ '^!'
       if input == '!'
         continue
@@ -37,8 +39,8 @@ function! s:matcher.filter(candidates, context)
     endif
 
     try
-      let candidates = unite#filters#filter_matcher(
-            \ candidates, expr, a:context)
+"       let candidates = unite#filters#filter_matcher(
+"             \ candidates, expr, a:context)
     catch
       let candidates = []
     endtry
