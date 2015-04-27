@@ -39,3 +39,10 @@ git clone https://github.com/osyo-manga/vim-vigemo ~/.vim/bundle/vim-vigemo
 nmap <Space>/ <Plug>(vigemo-search)
 ```
 
+#### unite.vim
+
+```vim
+" Use vigemo matcher in unite-file
+call unite#custom#source('file', 'matchers', "matcher_vigemo")
+```
+
