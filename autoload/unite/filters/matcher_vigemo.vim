@@ -39,8 +39,8 @@ function! s:matcher.filter(candidates, context)
     endif
 
     try
-"       let candidates = unite#filters#filter_matcher(
-"             \ candidates, expr, a:context)
+      let candidates = unite#filters#filter_matcher(
+            \ candidates, expr, a:context)
     catch
       let candidates = []
     endtry
