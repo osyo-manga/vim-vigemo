@@ -44,7 +44,7 @@ endfunction
 
 let s:cmdline = s:Commandline.make_standard("/")
 
-call s:cmdline.connect(s:Modules.make("HistAdd", "/"))
+call s:cmdline.disconnect("HistAdd")
 
 
 function! s:cmdline._update(pat)
@@ -59,9 +59,6 @@ function! s:cmdline._update(pat)
 		return
 	endif
 
-	if &ignorecase
-		let pat = '\c' . pat
-	endif
 	let @/ = pat
 	set hlsearch
 	
@@ -102,6 +99,7 @@ function! s:cmdline.on_leave(...)
 		call self._view.unlock()
 	endif
 	call s:Highlight.clear_all()
+	call histadd("/", @/)
 endfunction
 
 
