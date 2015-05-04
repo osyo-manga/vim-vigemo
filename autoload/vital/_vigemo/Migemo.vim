@@ -31,6 +31,8 @@ function! s:_search_dict(name)
           \ '/usr/local/share/',
           \ '/usr/share/cmigemo/',
           \ '/usr/share/',
+          \ '/opt/boxen/homebrew/opt/cmigemo/share/cmigemo/',
+          \ '/opt/boxen/homebrew/opt/cmigemo/share/',
           \ ]
       let path = path . a:name
       if filereadable(path)
